@@ -150,7 +150,7 @@ model Episode {
   id            Int           @id @default(autoincrement())
   seriesId      Int           @map("series_id")
   season        Int           @default(1)
-  episodeNumber Int           @unique @map("episode_number")
+  episodeNumber Int           @map("episode_number")
   title         String        @db.VarChar(255)
   description   String?
   duration      Int
