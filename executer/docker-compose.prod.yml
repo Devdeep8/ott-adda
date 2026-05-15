@@ -1,0 +1,76 @@
+version: "3.5"
+
+networks:
+  ott-platform-net:
+    name: ott-platform-net
+
+volumes:
+  postgres-data:
+
+services:
+  database:
+    image: postgres:14-alpine
+    container_name: ott-postgres-prod
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    restart: unless-stopped
+    networks:
+      - ott-platform-net
+
+  redis:
+    image: redis:6.2-alpine
+    container_name: ott-redis-prod
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - ott-platform-net
+
+  user-backend:
+    build:
+      context: ../user-backend
+      target: production
+    container_name: ott-user-backend-prod
+    ports:
+      - "8002:8002"
+    environment:
+      - NODE_ENV=production
+      - PORT=8002
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/${DB_NAME}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+    depends_on:
+      - database
+      - redis
+    restart: unless-stopped
+    networks:
+      - ott-platform-net
+
+  admin-backend:
+    build:
+      context: ../admin-backend
+      target: production
+    container_name: ott-admin-backend-prod
+    ports:
+      - "8003:8003"
+    environment:
+      - NODE_ENV=production
+      - PORT=8003
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/${DB_NAME}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_SECRET=${ADMIN_SECRET}
+    depends_on:
+      - database
+      - redis
+    restart: unless-stopped
+    networks:
+      - ott-platform-net
