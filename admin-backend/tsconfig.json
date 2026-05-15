@@ -1,29 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2022",
-    "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "checkJs": false,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": false,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./ ",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"],
-      "@prisma/client": ["./src/prisma/generated/prisma/client"]
-    }
+      "@/*": ["./*"]
+    },
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true
   },
-  "include": [
-    "src/**/*",
-    "./src/prisma/generated/prisma/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src/**/*", "index.js"],
+  "exclude": ["node_modules", "dist", "generated"]
 }

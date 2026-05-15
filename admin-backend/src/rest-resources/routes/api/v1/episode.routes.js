@@ -10,6 +10,6 @@ router.get('/', adminAuthMiddleware, episodeController.list)
 router.get('/:id', adminAuthMiddleware, episodeController.getById)
 router.post('/', adminAuthMiddleware, episodeController.create)
 router.put('/:id', adminAuthMiddleware, episodeController.update)
-router.delete('/:id, adminAuthMiddleware, episodeController.delete)
+router.delete('/:id', adminAuthMiddleware, episodeController.delete)
 
 export default router
