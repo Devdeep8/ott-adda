@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-async function hashPassword(password) {
+async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
@@ -55,7 +55,6 @@ async function seedUsers() {
   return { admin, subscriber, freeUser };
 }
 
-
 async function seedSubscriptionPlans() {
   console.log('\n💳 Seeding subscription plans...');
 
@@ -97,7 +96,7 @@ async function seedSubscriptionPlans() {
   return createdPlans;
 }
 
-async function seedUserSubscription(subscriber, monthlyPlan) {
+async function seedUserSubscription(subscriber: any, monthlyPlan: any) {
   console.log('\n📅 Seeding user subscription...');
 
   const now = new Date();
@@ -150,7 +149,7 @@ async function seedSeries() {
       title: 'Love in Mumbai',
       slug: 'love-in-mumbai',
       genres: ['Romance', 'Drama'],
-      status: 'ACTIVE',
+      status: 'ACTIVE' as const,
       releaseDate: new Date('2024-01-15'),
       viewCount: 1240,
       isFeatured: true,
@@ -160,7 +159,7 @@ async function seedSeries() {
       title: 'The Hidden Truth',
       slug: 'the-hidden-truth',
       genres: ['Thriller', 'Drama'],
-      status: 'ACTIVE',
+      status: 'ACTIVE' as const,
       releaseDate: new Date('2024-02-01'),
       viewCount: 890,
       description: 'Dark secrets unfold in this gripping thriller.',
@@ -169,7 +168,7 @@ async function seedSeries() {
       title: 'College Diaries',
       slug: 'college-diaries',
       genres: ['Comedy', 'Romance'],
-      status: 'ACTIVE',
+      status: 'ACTIVE' as const,
       releaseDate: new Date('2024-03-10'),
       viewCount: 2100,
       description: 'Fun, love, and chaos — the college years.',
@@ -178,7 +177,7 @@ async function seedSeries() {
       title: 'Shadows of Power',
       slug: 'shadows-of-power',
       genres: ['Action', 'Thriller'],
-      status: 'UPCOMING',
+      status: 'UPCOMING' as const,
       releaseDate: new Date('2025-08-01'),
       viewCount: 0,
       description: 'Power corrupts. Secrets destroy.',
@@ -199,16 +198,16 @@ async function seedSeries() {
   return createdSeries;
 }
 
-async function seedEpisodes(series) {
+async function seedEpisodes(series: any[]) {
   console.log('\n🎬 Seeding episodes...');
 
   // Only seed episodes for active series (first 3)
   let episodeCount = 0;
   for (const s of series.slice(0, 3)) {
     const episodes = [
-      { episodeNumber: 1, title: 'Pilot', isFree: true, status: 'PROCESSING' },
-      { episodeNumber: 2, title: 'Rising Tension', isFree: false, status: 'PROCESSING' },
-      { episodeNumber: 3, title: 'Turning Point', isFree: false, status: 'PROCESSING' },
+      { episodeNumber: 1, title: 'Pilot', isFree: true, status: 'PROCESSING' as const },
+      { episodeNumber: 2, title: 'Rising Tension', isFree: false, status: 'PROCESSING' as const },
+      { episodeNumber: 3, title: 'Turning Point', isFree: false, status: 'PROCESSING' as const },
     ];
 
     for (const ep of episodes) {
@@ -235,7 +234,7 @@ async function seedEpisodes(series) {
   console.log(`  ✅ Created ${episodeCount} episodes`);
 }
 
-async function seedSeriesCategories(series, categories) {
+async function seedSeriesCategories(series: any[], categories: any[]) {
   console.log('\n🏷️  Seeding series-category mappings...');
 
   const topPicks = categories.find((c) => c.slug === 'top-picks');

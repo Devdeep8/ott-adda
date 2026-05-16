@@ -1,4 +1,4 @@
-import { sendResponse } from "../../helpers/response.helpers"
+﻿import { sendResponse } from "../../helpers/response.helpers"
 import RegisterService from "../../services/auth/register.service"
 import LoginService from "../../services/auth/login.service"
 import { setAuthCookies } from "@/src/helpers/cookie.helper.js"
@@ -18,7 +18,8 @@ export default class UserController {
       await redis.set(REDIS_KEYS.USER_SESSION(result.user.id), JSON.stringify(result.user), 'EX', SEVEN_DAYS_IN_SECONDS)
       
       setAuthCookies(res, { accessToken: result.accessToken, refreshToken: result.refreshToken })
-      sendResponse({ req, res, next }, result)
+      // Response should not reference onboarding; frontend can use user.business or user.subscription if needed
+      sendResponse({ req, res, next }, result, 'Registration successful')
     } catch (error) { next(error) }
   }
 
@@ -31,17 +32,63 @@ export default class UserController {
       await redis.set(REDIS_KEYS.USER_SESSION(result.user.id), JSON.stringify(result.user), 'EX', SEVEN_DAYS_IN_SECONDS)
       
       setAuthCookies(res, { accessToken: result.accessToken, refreshToken: result.refreshToken })
-      sendResponse({ req, res, next }, result)
+      // Response should not reference onboarding; frontend can use user.business or user.subscription if needed
+      sendResponse({ req, res, next }, result, 'Login successful')
     } catch (error) { next(error) }
   }
 
   static async getMe(req, res, next) {
     try {
+      // Fetch user with business and subscription (include plan)
       const user = await prisma.user.findUnique({
         where: { id: req.context.user.id },
-        include: { business: true }
+        include: {
+          business: true,
+          subscription: {
+            include: {
+              plan: {
+                select: { id: true, name: true, slug: true, priceInPaise: true, features: true }
+              }
+            }
+          }
+        }
       });
-      sendResponse({ req, res, next }, { user })
+
+      // Normalize subscription to a simpler shape used by other endpoints
+      const subscription = user?.subscription
+        ? {
+            planId: user.subscription.plan?.id || null,
+            planName: user.subscription.plan?.name || null,
+            planSlug: user.subscription.plan?.slug || null,
+            status: user.subscription.status,
+            startDate: user.subscription.startDate,
+            endDate: user.subscription.endDate
+          }
+        : null
+
+      // Remove the nested subscription object to avoid redundancy
+      const { subscription: _sub, ...userWithoutNestedSubscription } = user || {}
+
+      sendResponse({ req, res, next }, { user: { ...userWithoutNestedSubscription, subscription } }, 'Profile fetched')
     } catch (error) { next(error) }
+  }
+
+  static async logout(req, res, next) {
+    try {
+      const userId = req.context?.user?.id
+      if (userId) {
+        await redis.del(REDIS_KEYS.USER_SESSION(userId))
+        await redis.del(REDIS_KEYS.USER_REFRESH_TOKEN(userId))
+      }
+
+      // Clear cookies
+      res.clearCookie('accessToken', { path: '/' })
+      res.clearCookie('refreshToken', { path: '/' })
+
+      // Return a neutral response (frontend can redirect to /home)
+      sendResponse({ req, res, next }, { redirect: '/home' }, 'Logout successful')
+    } catch (error) {
+      next(error)
+    }
   }
 }

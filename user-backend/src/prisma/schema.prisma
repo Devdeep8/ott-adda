@@ -1,21 +1,23 @@
-// OTT Platform Database Schema
-// Designed for scalability and clean architecture
+// OTT Platform Database Schema (upgraded)
+// PostgreSQL + Prisma — complete OTT data model
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "./generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// ============================================
+// -------------------------
 // ENUMS
-// ============================================
+// -------------------------
 
 enum UserRole {
   USER
+  ADMIN
 }
 
 enum AdminRole {
@@ -29,6 +31,12 @@ enum SubscriptionStatus {
   EXPIRED
   PENDING
   PAUSED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }
 
 enum SubscriptionPlanType {
@@ -46,6 +54,8 @@ enum ContentType {
 enum ContentStatus {
   DRAFT
   PUBLISHED
+  ACTIVE
+  UPCOMING
   ARCHIVED
 }
 
@@ -57,276 +67,216 @@ enum CategoryType {
   TRENDING
   CUSTOM
 }
-
-// ============================================
-// MODELS
-// ============================================
-
-// ============================================
-// ADMIN & AUTHENTICATION (Separate from users)
-// ============================================
-
-model Admin {
-  id          Int       @id @default(autoincrement())
-  email       String    @unique
-  password    String
-  firstName   String    @map("first_name")
-  lastName    String?   @map("last_name")
-  role        AdminRole @default(ADMIN)
-  isActive    Boolean   @default(true) @map("is_active")
-  lastLoginAt DateTime? @map("last_login_at")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
-
-  @@map("admins")
-  @@index([email])
-  @@index([isActive])
+enum EpisodeStatus {
+  PROCESSING
+  READY
+  FAILED
 }
 
-// ============================================
-// USER & AUTHENTICATION
-// ============================================
+enum SeriesStatus {
+  DRAFT
+  ACTIVE
+  UPCOMING
+  ARCHIVED
+}
+
+enum VideoStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+// -------------------------
+// MODELS
+// IDs use cuid() (UUID-like) per project requirement
+// -------------------------
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  password     String?
-  phone        String?  @unique
-  role         UserRole @default(USER)
-  isActive     Boolean  @default(true) @map("is_active")
-  emailVerified Boolean @default(false) @map("email_verified")
-  lastLoginAt  DateTime? @map("last_login_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  id           String          @id @default(cuid())
+  email        String          @unique
+  passwordHash String
+  name         String
+  avatarUrl    String?
+  role         UserRole        @default(USER)
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
-  // Profile
-  profile      UserProfile?
+  // Relations
+  subscription  UserSubscription?
+  watchHistory  WatchHistory[]
+  watchList     WatchList[]
+  payments      Payment[]
 
-  // Subscription
-  subscription UserSubscription?
-
-  // User Activity
-  watchHistory WatchHistory[]
-  watchList    WatchListItem[]
-
-  @@map("users")
   @@index([email])
-  @@index([phone])
-  @@index([isActive])
 }
-
-model UserProfile {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @unique @map("user_id")
-  firstName   String?  @map("first_name")
-  lastName    String?  @map("last_name")
-  displayName String?  @map("display_name")
-  avatarUrl   String?  @map("avatar_url")
-  dateOfBirth DateTime? @map("date_of_birth")
-  gender      String?
-  language    String   @default("en")
-  country     String?
-  preferences Json?    // Store user preferences as JSON
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_profiles")
-  @@index([userId])
-}
-
-// ============================================
-// SUBSCRIPTION
-// ============================================
 
 model SubscriptionPlan {
-  id          Int                  @id @default(autoincrement())
-  name        String               @db.VarChar(100)
-  description String?
-  type        SubscriptionPlanType
-  price       Float
-  currency    String               @default("INR") @db.VarChar(3)
-  durationDays Int                 @map("duration_days")
-  features    Json?                // Store features as JSON array
-  isActive    Boolean              @default(true) @map("is_active")
-  stripePriceId String?            @map("stripe_price_id")
-  razorpayPlanId String?           @map("razorpay_plan_id")
-  createdAt   DateTime             @default(now()) @map("created_at")
-  updatedAt   DateTime             @updatedAt @map("updated_at")
+  id           String            @id @default(cuid())
+  name         String
+  slug         String            @unique
+  priceInPaise Int
+  durationDays Int
+  features     String[]
+  isActive     Boolean           @default(true)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   subscriptions UserSubscription[]
-
-  @@map("subscription_plans")
-  @@index([isActive])
 }
 
 model UserSubscription {
-  id              Int                @id @default(autoincrement())
-  userId          Int                @unique @map("user_id")
-  planId          Int                @map("plan_id")
-  status          SubscriptionStatus @default(PENDING)
-  startDate       DateTime           @map("start_date")
-  endDate         DateTime           @map("end_date")
-  cancelledAt     DateTime?          @map("cancelled_at")
-  paymentId       String?            @map("payment_id")
-  amount          Float
-  currency        String             @default("INR") @db.VarChar(3)
-  autoRenew       Boolean           @default(true) @map("auto_renew")
-  createdAt       DateTime           @default(now()) @map("created_at")
-  updatedAt       DateTime           @updatedAt @map("updated_at")
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  planId    String
+  status    SubscriptionStatus @default(ACTIVE)
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 
-  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan SubscriptionPlan @relation(fields: [planId], references: [id])
 
   @@map("user_subscriptions")
-  @@index([userId])
-  @@index([status])
-  @@index([endDate])
 }
 
-// ============================================
-// CONTENT - SERIES & EPISODES
-// ============================================
+model Payment {
+  id                 String        @id @default(cuid())
+  userId             String
+  planId             String
+  amountInPaise      Int
+  currency           String        @default("INR")
+  status             PaymentStatus @default(PENDING)
+  razorpayOrderId    String?
+  razorpayPaymentId  String?
+  razorpaySignature  String?
+  paidAt             DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  @@index([userId, status])
+}
 
 model Series {
-  id          Int          @id @default(autoincrement())
-  title       String       @db.VarChar(255)
-  slug        String       @unique @db.VarChar(255)
-  description String?
-  posterUrl   String?      @map("poster_url")
-  backdropUrl String?      @map("backdrop_url")
-  trailerUrl  String?      @map("trailer_url")
-  releaseDate DateTime?    @map("release_date")
-  status      ContentStatus @default(DRAFT)
-  type        ContentType  @default(SERIES)
-  language    String?      @db.VarChar(50)
-  duration    Int?         // In minutes (for movies)
-  rating      Float?       // IMDB/Custom rating
-  ratingCount Int?         @map("rating_count")
-  genres      Json?        // Store genres as JSON array
-  tags        Json?        // Store tags as JSON array
-  cast        Json?        // Store cast as JSON array
-  crew        Json?        // Store crew as JSON array
-  metadata    Json?        // Additional metadata as JSON
-  ageRating   String?      @map("age_rating")
-  isPremium   Boolean      @default(false) @map("is_premium")
-  isFeatured  Boolean      @default(false) @map("is_featured")
-  
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  deletedAt   DateTime?    @map("deleted_at")
+  id            String         @id @default(cuid())
+  title         String
+  slug          String         @unique
+  description   String?
+  genres        String[]
+  thumbnailUrl  String?
+  bannerUrl     String?
+  status        SeriesStatus   @default(DRAFT)
+  releaseDate   DateTime?
+  totalEpisodes Int            @default(0)
+  viewCount     Int            @default(0)
+  isFeatured    Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
-  episodes    Episode[]
-  categories  SeriesCategory[]
+  episodes      Episode[]
+  categories    SeriesCategory[]
 
-  @@map("series")
-  @@index([slug])
-  @@index([status])
-  @@index([isPremium])
-  @@index([isFeatured])
-  @@index([releaseDate])
+  @@index([status, viewCount, releaseDate])
 }
 
 model Episode {
-  id          Int          @id @default(autoincrement())
-  seriesId    Int          @map("series_id")
-  season      Int          @default(1)
-  episodeNumber Int        @map("episode_number")
-  title       String       @db.VarChar(255)
-  description String?
-  duration    Int          // In seconds
-  thumbnailUrl String?    @map("thumbnail_url")
-  videoUrl    String?      @map("video_url")
-  videoType   String?      @map("video_type") // HLS, DASH, MP4
-  status      ContentStatus @default(DRAFT)
-  releaseDate DateTime?    @map("release_date")
-  
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  deletedAt   DateTime?    @map("deleted_at")
+  id              String        @id @default(cuid())
+  seriesId        String
+  title           String
+  episodeNumber   Int
+  description     String?
+  thumbnailUrl    String?
+  durationSeconds Int           @default(0)
+  isFree          Boolean       @default(false)
+  viewCount       Int           @default(0)
+  status          EpisodeStatus @default(PROCESSING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  series Series @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  series   Series     @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  videoAsset VideoAsset?
+  watchHistory WatchHistory[]
 
-  @@map("episodes")
-  @@index([seriesId])
-  @@index([status])
   @@unique([seriesId, episodeNumber])
+  @@index([seriesId, episodeNumber])
 }
 
-// ============================================
-// CATEGORIES WITH ORDERING
-// ============================================
+model VideoAsset {
+  id              String      @id @default(cuid())
+  episodeId       String      @unique
+  originalPath    String?
+  hlsDirectory    String?
+  hlsManifestPath String?
+  durationSeconds Int         @default(0)
+  fileSizeBytes   BigInt      @default(0) @db.BigInt
+  resolution      String?
+  status          VideoStatus @default(PENDING)
+  processingError String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  episode Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+}
 
 model Category {
-  id          Int          @id @default(autoincrement())
-  name        String       @db.VarChar(100)
-  slug        String       @unique @db.VarChar(100)
-  type        CategoryType
-  description String?
-  isActive    Boolean      @default(true) @map("is_active")
-  order       Int          @default(0) // Order of categories on homepage
-  iconUrl     String?      @map("icon_url")
-  metadata    Json?        // Additional metadata as JSON
-  
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
+  id           String           @id @default(cuid())
+  name         String
+  slug         String           @unique
+  description  String?
+  displayOrder Int              @default(0)
+  isAutomatic  Boolean          @default(false)
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 
-  series      SeriesCategory[]
-
-  @@map("categories")
-  @@index([isActive])
-  @@index([order])
+  series SeriesCategory[]
 }
 
-// Join table for Series-Category with ordering within category
 model SeriesCategory {
-  id         Int      @id @default(autoincrement())
-  seriesId   Int      @map("series_id")
-  categoryId Int      @map("category_id")
-  order      Int      @default(0) // Order of series within this category
-  addedAt    DateTime @default(now()) @map("added_at")
+  id           String   @id @default(cuid())
+  seriesId     String
+  categoryId   String
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
 
   series   Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@unique([seriesId, categoryId])
-  @@index([categoryId])
-  @@index([seriesId])
-  @@map("series_categories")
 }
-
-// ============================================
-// USER ACTIVITY
-// ============================================
 
 model WatchHistory {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @map("user_id")
-  seriesId    Int      @map("series_id")
-  episodeId   Int?     @map("episode_id")
-  watchedAt   DateTime @default(now()) @map("watched_at")
-  watchDuration Int?   @map("watch_duration") // In seconds
-  completed   Boolean  @default(false)
+  id              String   @id @default(cuid())
+  userId          String
+  episodeId       String
+  seriesId        String
+  progressSeconds Int      @default(0)
+  durationSeconds Int      @default(0)
+  isCompleted     Boolean  @default(false)
+  watchedAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episode Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  series  Series  @relation(fields: [seriesId], references: [id], onDelete: Cascade)
 
-  @@map("watch_history")
-  @@index([userId])
-  @@index([seriesId])
-  @@index([watchedAt])
+  @@unique([userId, episodeId])
+  @@index([userId, watchedAt])
 }
 
-model WatchListItem {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
-  seriesId  Int      @map("series_id")
-  addedAt   DateTime @default(now()) @map("added_at")
+model WatchList {
+  id       String   @id @default(cuid())
+  userId   String
+  seriesId String
+  addedAt  DateTime @default(now())
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  series Series @relation(fields: [seriesId], references: [id], onDelete: Cascade)
 
   @@unique([userId, seriesId])
-  @@index([userId])
-  @@index([seriesId])
-  @@map("watch_list")
 }

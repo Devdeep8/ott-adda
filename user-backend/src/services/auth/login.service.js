@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs'
+﻿import bcrypt from 'bcryptjs'
 import { BaseService } from '@/src/lib/base.service.js'
 import { AppError } from '@/src/errors/app.error.js'
 import { Errors } from '@/src/errors/errorCodes.js'
@@ -47,12 +47,38 @@ export default class LoginService extends BaseService {
     const accessToken = generateAccessToken(payload)
     const refreshToken = generateRefreshToken(payload)
 
-    // 5. Store session in Redis
+    // 5. Fetch active subscription (if any)
+    const subscription = await db.userSubscription.findFirst({
+      where: {
+        userId: user.id,
+        status: 'ACTIVE',
+        endDate: { gt: new Date() }
+      },
+      include: {
+        plan: {
+          select: { id: true, name: true, slug: true, priceInPaise: true, features: true }
+        }
+      }
+    })
+
+    const subscriptionData = subscription
+      ? {
+          planId: subscription.plan?.id || null,
+          planName: subscription.plan?.name || null,
+          planSlug: subscription.plan?.slug || null,
+          status: subscription.status,
+          startDate: subscription.startDate,
+          endDate: subscription.endDate
+        }
+      : null
+
+    // 6. Store session in Redis
     const sessionData = {
       id: user.id,
       email: user.email,
       role: user.role,
-      profile: user.profile
+      profile: user.profile,
+      subscription: subscriptionData
     }
     await redis.setex(
       REDIS_KEYS.USER_SESSION(user.id),
@@ -65,19 +91,24 @@ export default class LoginService extends BaseService {
       JSON.stringify(sessionData)
     )
 
-    // 6. Update last login
+    // 7. Update last login
     await db.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() }
     })
 
-    // 7. Safe response
+    // 8. Safe response
     const { password: _, ...safeUser } = user
+    const safeUserWithSubscription = {
+      ...safeUser,
+      subscription: subscriptionData
+    }
 
     return {
-      user: safeUser,
+      user: safeUserWithSubscription,
       accessToken,
       refreshToken,
+      subscription: subscriptionData
     }
   }
 }

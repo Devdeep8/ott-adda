@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs'
+﻿import bcrypt from 'bcryptjs'
 import { BaseService } from '@/src/lib/base.service.js'
 import { AppError } from '@/src/errors/app.error.js'
 import { Errors } from '@/src/errors/errorCodes.js'
@@ -54,7 +54,8 @@ export default class RegisterService extends BaseService {
       id: user.id,
       email: user.email,
       role: user.role,
-      profile: null
+      profile: null,
+      subscription: null
     }
     await redis.setex(
       REDIS_KEYS.USER_SESSION(user.id),
@@ -71,9 +72,13 @@ export default class RegisterService extends BaseService {
     const refreshToken = generateRefreshToken({ userId: user.id, email: user.email })
 
     const { password: _, ...safeUser } = user
+    const safeUserWithSubscription = {
+      ...safeUser,
+      subscription: null
+    }
 
     return {
-      user: safeUser,
+      user: safeUserWithSubscription,
       accessToken,
       refreshToken,
     }

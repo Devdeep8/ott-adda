@@ -1,4 +1,4 @@
-import { AppError } from "@/src/errors/app.error.js";
+﻿import { AppError } from "@/src/errors/app.error.js";
 import { Errors } from "@/src/errors/errorCodes.js";
 import prisma from "../../lib/prisma";
 import { verifyAccessToken, verifyRefreshToken, generateAccessToken, generateRefreshToken } from "@/src/helpers/auth.helper.js";
@@ -33,7 +33,11 @@ export function authMiddleware() {
           const user = JSON.parse(cachedUser);
           if (user.isActive) {
             req.context.userId = user.id;
+            // Ensure subscription present on req.context.user
             req.context.user = user;
+            if (user.subscription) {
+              req.context.user.subscription = user.subscription
+            }
             if (user.business?.id) {
               req.context.businessId = user.business.id;
               return next();
@@ -77,19 +81,45 @@ export function authMiddleware() {
         throw new AppError(Errors.AUTH_UNAUTHORIZED, { traceId: req.context?.traceId });
       }
 
+      // 5b. Fetch active subscription for session
+      const subscription = await prisma.userSubscription.findFirst({
+        where: {
+          userId: user.id,
+          status: 'ACTIVE',
+          endDate: { gt: new Date() }
+        },
+        include: {
+          plan: {
+            select: { id: true, name: true, slug: true, priceInPaise: true, features: true }
+          }
+        }
+      })
+
+      const subscriptionData = subscription
+        ? {
+            planId: subscription.plan?.id || null,
+            planName: subscription.plan?.name || null,
+            planSlug: subscription.plan?.slug || null,
+            status: subscription.status,
+            startDate: subscription.startDate,
+            endDate: subscription.endDate
+          }
+        : null
+
       // 6. Generate NEW Tokens (Token Rotation)
       const newAccessToken = generateAccessToken({ userId: user.id, email: user.email });
       const newRefreshToken = generateRefreshToken({ userId: user.id, email: user.email });
 
       // 7. Update Redis with new tokens and fresh user data
       await redis.set(redisKey, newRefreshToken, 'EX', SEVEN_DAYS_IN_SECONDS);
-      await redis.set(REDIS_KEYS.USER_SESSION(user.id), JSON.stringify(user), 'EX', SEVEN_DAYS_IN_SECONDS);
+      await redis.set(REDIS_KEYS.USER_SESSION(user.id), JSON.stringify({ ...user, subscription: subscriptionData }), 'EX', SEVEN_DAYS_IN_SECONDS);
 
       // 8. Set new cookies on the response
       setAuthCookies(res, { accessToken: newAccessToken, refreshToken: newRefreshToken });
 
-      // 9. Inject user into context
-      req.context.user = user;
+      // 9. Inject user into context (include subscription)
+      req.context.user = { ...user, subscription: subscriptionData };
+      req.context.userId = user.id;
       
       const business = await prisma.business.findUnique({ where: { userId: user.id } });
       if (business) req.context.businessId = business.id;
