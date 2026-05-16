@@ -46,6 +46,7 @@ const optionalAuthMiddleware = async (req: Request, res: Response, next: NextFun
 }
 
 seriesRouter.get('/', optionalAuthMiddleware, SeriesController.getAll)
+seriesRouter.get('/by-slug/:slug', SeriesController.getBySlug)
 seriesRouter.get('/:id', SeriesController.getById)
 seriesRouter.get('/:id/episodes', optionalAuthMiddleware, SeriesController.getEpisodes)
 seriesRouter.post('/', authMiddleware(), requireAdmin(), uploadThumbnail, SeriesController.create)

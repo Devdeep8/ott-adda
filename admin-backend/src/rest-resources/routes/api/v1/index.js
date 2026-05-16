@@ -4,6 +4,7 @@ import episodeRoutes from './episode.routes.js'
 import categoryRoutes from './category.routes.js'
 import subscriptionRoutes from './subscription.routes.js'
 import userRoutes from './user.routes.js'
+import adminRoutes from './admin.routes.js'
 
 const router = (await import('express')).Router()
 
@@ -20,5 +21,8 @@ router.use('/subscriptions', subscriptionRoutes)
 
 // Admin user management routes
 router.use('/users', userRoutes)
+
+// Admin panel routes (dashboard, user role)
+router.use('/admin', adminRoutes)
 
 export default router

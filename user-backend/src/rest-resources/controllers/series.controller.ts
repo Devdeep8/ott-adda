@@ -86,6 +86,42 @@ export class SeriesController {
     }
   }
 
+  static async getBySlug(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { slug } = req.params
+
+      // Import here to avoid circular dependency
+      const { prisma } = await import('@/src/lib/prisma.js')
+
+      const series = await prisma.series.findUnique({
+        where: { slug },
+        include: {
+          _count: {
+            select: { episodes: true },
+          },
+        },
+      })
+
+      if (!series) {
+        const { AppError, Errors } = await import('@/src/errors/index.js')
+        throw new AppError(Errors.SERIES_NOT_FOUND.message, Errors.SERIES_NOT_FOUND.code)
+      }
+
+      const totalEpisodes = series._count?.episodes || 0
+      const { _count, ...seriesData } = series
+
+      return res.json({
+        success: true,
+        data: {
+          ...seriesData,
+          totalEpisodes,
+        },
+      })
+    } catch (error) {
+      return next(error)
+    }
+  }
+
   static async getEpisodes(req: Request, res: Response, next: NextFunction) {
     try {
       const seriesId = req.params.id

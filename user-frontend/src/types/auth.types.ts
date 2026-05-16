@@ -1,30 +1,28 @@
+export interface SubscriptionInfo {
+  planId: string
+  planName: string
+  planSlug: string
+  status: 'ACTIVE' | 'CANCELLED' | 'EXPIRED' | 'PENDING' | 'PAUSED'
+  startDate: string
+  endDate: string
+}
+
 export interface User {
-  id: number
+  id: string
   email: string
-  business?: any
+  name?: string
   role: 'USER' | 'ADMIN'
-  authProvider: 'LOCAL' | 'GOOGLE'
   isActive: boolean
   createdAt: string
   updatedAt: string
-}
-
-export interface Profile {
-  id: number
-  userId: number
-  slug: string
-  name: string
-  bio?: string
-  avatarUrl?: string
-  theme: string
-  isActive: boolean
+  subscription?: SubscriptionInfo | null
 }
 
 export interface AuthResponse {
   success: boolean
+  message?: string
   data: {
     user: User
-    profile: Profile
     accessToken: string
     refreshToken: string
   }
@@ -36,6 +34,7 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
+  name: string
   email: string
   password: string
 }
