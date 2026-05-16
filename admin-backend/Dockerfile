@@ -23,8 +23,8 @@ RUN npm install
 # Source copied last
 COPY --chown=node:node . .
 
-# Generate Prisma Client
-RUN npx prisma generate
+# Generate Prisma Client with explicit schema path
+RUN npx prisma generate --schema=./src/prisma/schema.prisma
 
 ENTRYPOINT ["/sbin/tini", "--"]
 

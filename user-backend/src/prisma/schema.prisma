@@ -8,7 +8,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // -------------------------
@@ -124,6 +123,7 @@ model SubscriptionPlan {
   updatedAt    DateTime          @updatedAt
 
   subscriptions UserSubscription[]
+  payments      Payment[]
 }
 
 model UserSubscription {
@@ -180,6 +180,8 @@ model Series {
 
   episodes      Episode[]
   categories    SeriesCategory[]
+  watchHistory  WatchHistory[]
+  watchList     WatchList[]
 
   @@index([status, viewCount, releaseDate])
 }
