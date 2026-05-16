@@ -1,8 +1,7 @@
-version: "3.5"
-
 networks:
   ott-platform-net:
     name: ott-platform-net
+    driver: bridge
 
 volumes:
   redis-data:
@@ -11,29 +10,7 @@ volumes:
   redisinsight-data:
 
 services:
-  redis:
-    image: redis:6.2-alpine
-    container_name: ott-redis
-    command: redis-server --requirepass "ott_redis_pass"
-    volumes:
-      - redis-data:/data
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
-    networks:
-      - ott-platform-net
-
-  redis-insight:
-    image: redis/redisinsight:latest
-    container_name: ott-redisinsight
-    ports:
-      - "5540:5540"
-    volumes:
-      - redisinsight-data:/data
-    restart: unless-stopped
-    networks:
-      - ott-platform-net
-
+  # ─── Database Services ──────────────────────────────────
   database:
     image: postgres:14-alpine
     container_name: ott-postgres
@@ -45,6 +22,40 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ott_db_pass
       POSTGRES_DB: ott_platform_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - ott-platform-net
+
+  redis:
+    image: redis:6.2-alpine
+    container_name: ott-redis
+    command: redis-server --requirepass "ott_redis_pass"
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - ott-platform-net
+
+  # ─── Development Tools ──────────────────────────────────
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: ott-redisinsight
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight-data:/data
     restart: unless-stopped
     networks:
       - ott-platform-net
@@ -66,6 +77,7 @@ services:
     networks:
       - ott-platform-net
 
+  # ─── Backend Services ───────────────────────────────────
   user-backend:
     build:
       context: ../user-backend
@@ -76,34 +88,89 @@ services:
     tty: true
     volumes:
       - ../user-backend:/home/node/app
-      - /home/node/app/node_modules 
+      - /home/node/app/node_modules
     ports:
       - "8002:8002"
     env_file: ../user-backend/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:ott_db_pass@database:5432/ott_platform_db
+      - REDIS_URL=redis://:ott_redis_pass@redis:6379
     depends_on:
-      - database
-      - redis
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - ott-platform-net
 
-  # admin-backend:
-  #   build:
-  #     context: ../admin-backend
-  #     target: builder
-  #   container_name: ott-admin-backend
-  #   command: npm run dev
-  #   stdin_open: true
-  #   tty: true
-  #   volumes:
-  #     - ../admin-backend:/home/node/app
-  #     - /home/node/app/node_modules 
-  #   ports:
-  #     - "8003:8003"
-  #   env_file: ../admin-backend/.env
-  #   depends_on:
-  #     - database
-  #     - redis
-  #   restart: unless-stopped
-  #   networks:
-  #     - ott-platform-net
+  admin-backend:
+    build:
+      context: ../admin-backend
+      target: builder
+    container_name: ott-admin-backend
+    command: npm run dev
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../admin-backend:/home/node/app
+      - /home/node/app/node_modules
+    ports:
+      - "8003:8003"
+    env_file: ../admin-backend/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:ott_db_pass@database:5432/ott_platform_db
+      - REDIS_URL=redis://:ott_redis_pass@redis:6379
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - ott-platform-net
+
+  # ─── Frontend Services ──────────────────────────────────
+  user-frontend:
+    build:
+      context: ../user-frontend
+      target: base
+    container_name: ott-user-frontend
+    command: npm run dev
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../user-frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file: ../user-frontend/.env.local
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8002
+    depends_on:
+      - user-backend
+    restart: unless-stopped
+    networks:
+      - ott-platform-net
+
+  admin-frontend:
+    build:
+      context: ../admin-frontend
+      target: base
+    container_name: ott-admin-frontend
+    command: npm run dev
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../admin-frontend:/app
+      - /app/node_modules
+    ports:
+      - "3001:3000"
+    env_file: ../admin-frontend/.env.local
+    environment:
+      - NEXT_PUBLIC_ADMIN_API_URL=http://localhost:8003
+    depends_on:
+      - admin-backend
+    restart: unless-stopped
+    networks:
+      - ott-platform-net

@@ -21,8 +21,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=deps /app/node_modules ./node_modules
 
-# copy env FIRST so Next.js sees it
-COPY .env .env
+# copy env files if they exist
+COPY .env* ./
 
 # copy rest of project
 COPY . .
