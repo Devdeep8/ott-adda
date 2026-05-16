@@ -4,13 +4,26 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
-import { LayoutDashboard, Users, Grid, History, Activity, Settings, ChevronRight, Book } from "lucide-react"
+import {
+  LayoutDashboard, Users, Film, Tag, CreditCard,
+  Settings, ChevronRight, Activity, Upload
+} from "lucide-react"
 
 const NAV_ITEMS = [
   {
-    label: "Overview",
+    label: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    label: "Series",
+    href: "/dashboard/series",
+    icon: Film,
+  },
+  {
+    label: "Categories",
+    href: "/dashboard/categories",
+    icon: Tag,
   },
   {
     label: "Users",
@@ -18,19 +31,9 @@ const NAV_ITEMS = [
     icon: Users,
   },
   {
-    label: "Blogs",
-    href: "/dashboard/blogs",
-    icon: Book,
-  },
-  {
-    label: "Modules",
-    href: "/dashboard/modules",
-    icon: Grid,
-  },
-  {
-    label: "Sessions",
-    href: "/dashboard/sessions",
-    icon: History,
+    label: "Subscriptions",
+    href: "/dashboard/subscriptions",
+    icon: CreditCard,
   },
   {
     label: "Analytics",
@@ -38,9 +41,9 @@ const NAV_ITEMS = [
     icon: Activity,
   },
   {
-    label: "Pages & SEO",
-    href: "/dashboard/cms",
-    icon: Book, // Use Book or a generic icon, we can reuse
+    label: "Upload Content",
+    href: "/dashboard/upload",
+    icon: Upload,
   },
   {
     label: "Settings",
@@ -73,7 +76,7 @@ export default function Sidebar() {
       {/* Nav */}
       <nav className="flex-1 py-4 space-y-0.5 px-2 overflow-hidden">
         {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href
+          const active = pathname === item.href || pathname.startsWith(item.href + "/")
           const Icon = item.icon
           return (
             <Link
