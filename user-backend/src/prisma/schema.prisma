@@ -1,5 +1,5 @@
-// OTT Platform Database Schema (upgraded)
-// PostgreSQL + Prisma — complete OTT data model
+// Admin-backend Prisma schema upgraded to include OTT models
+// Preserves Admin, UserProfile models and existing enums; adds OTT models (Series, Episode, VideoAsset, Payments, Subscriptions, Watch history/list)
 
 generator client {
   provider = "prisma-client-js"
@@ -11,9 +11,29 @@ datasource db {
 }
 
 // -------------------------
-// ENUMS
+// Admin model (preserved)
 // -------------------------
+model Admin {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  password    String
+  firstName   String    @map("first_name")
+  lastName    String?   @map("last_name")
+  role        AdminRole @default(ADMIN)
+  isActive    Boolean   @default(true) @map("is_active")
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
 
+  @@map("admins")
+  @@index([email])
+  @@index([isActive])
+}
+
+// -------------------------
+// Enums (preserved + extended)
+// -------------------------
 enum UserRole {
   USER
   ADMIN
@@ -30,12 +50,6 @@ enum SubscriptionStatus {
   EXPIRED
   PENDING
   PAUSED
-}
-
-enum PaymentStatus {
-  PENDING
-  SUCCESS
-  FAILED
 }
 
 enum SubscriptionPlanType {
@@ -66,9 +80,10 @@ enum CategoryType {
   TRENDING
   CUSTOM
 }
-enum EpisodeStatus {
-  PROCESSING
-  READY
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
   FAILED
 }
 
@@ -79,6 +94,12 @@ enum SeriesStatus {
   ARCHIVED
 }
 
+enum EpisodeStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
 enum VideoStatus {
   PENDING
   PROCESSING
@@ -87,30 +108,56 @@ enum VideoStatus {
 }
 
 // -------------------------
-// MODELS
-// IDs use cuid() (UUID-like) per project requirement
+// User and profile (merged/upgraded)
+// Keep `UserProfile` but align `userId` type with `User.id`
 // -------------------------
-
 model User {
   id           String          @id @default(cuid())
   email        String          @unique
-  passwordHash String
-  name         String
-  avatarUrl    String?
+  passwordHash String?
+  phone        String?         @unique
   role         UserRole        @default(USER)
-  isActive     Boolean         @default(true)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  isActive     Boolean         @default(true) @map("is_active")
+  emailVerified Boolean         @default(false) @map("email_verified")
+  lastLoginAt  DateTime?       @map("last_login_at")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+  deletedAt    DateTime?       @map("deleted_at")
 
-  // Relations
-  subscription  UserSubscription?
-  watchHistory  WatchHistory[]
-  watchList     WatchList[]
-  payments      Payment[]
+  profile      UserProfile?
+  subscription UserSubscription?
+  watchHistory WatchHistory[]
+  watchList    WatchList[]
+  payments     Payment[]
 
+  @@map("users")
   @@index([email])
+  @@index([phone])
+  @@index([isActive])
 }
 
+model UserProfile {
+  id          Int       @id @default(autoincrement())
+  userId      String    @unique @map("user_id")
+  firstName   String?   @map("first_name")
+  lastName    String?   @map("last_name")
+  displayName String?   @map("display_name")
+  avatarUrl   String?   @map("avatar_url")
+  dateOfBirth DateTime? @map("date_of_birth")
+  gender      String?
+  language    String    @default("en")
+  country     String?
+  preferences Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_profiles")
+}
+
+// -------------------------
+// Subscriptions & Payments
+// -------------------------
 model SubscriptionPlan {
   id           String            @id @default(cuid())
   name         String
@@ -124,6 +171,8 @@ model SubscriptionPlan {
 
   subscriptions UserSubscription[]
   payments      Payment[]
+
+  @@map("subscription_plans")
 }
 
 model UserSubscription {
@@ -162,6 +211,9 @@ model Payment {
   @@index([userId, status])
 }
 
+// -------------------------
+// Content: Series, Episodes, VideoAsset
+// -------------------------
 model Series {
   id            String         @id @default(cuid())
   title         String
@@ -184,6 +236,7 @@ model Series {
   watchList     WatchList[]
 
   @@index([status, viewCount, releaseDate])
+  @@map("series")
 }
 
 model Episode {
@@ -206,6 +259,7 @@ model Episode {
 
   @@unique([seriesId, episodeNumber])
   @@index([seriesId, episodeNumber])
+  @@map("episodes")
 }
 
 model VideoAsset {
@@ -237,6 +291,8 @@ model Category {
   updatedAt    DateTime         @updatedAt
 
   series SeriesCategory[]
+
+  @@map("categories")
 }
 
 model SeriesCategory {
@@ -269,6 +325,7 @@ model WatchHistory {
 
   @@unique([userId, episodeId])
   @@index([userId, watchedAt])
+  @@map("watch_history")
 }
 
 model WatchList {
@@ -281,4 +338,5 @@ model WatchList {
   series Series @relation(fields: [seriesId], references: [id], onDelete: Cascade)
 
   @@unique([userId, seriesId])
+  @@map("watch_list")
 }

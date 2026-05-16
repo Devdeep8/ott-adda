@@ -5,9 +5,12 @@ export async function getCurrentUser() {
   try {
     const cookieStore = await cookies()
 
-    const token = cookieStore.get("admin-token")?.value
+    const token = cookieStore.get("adminToken")?.value
 
-    if (!token) return null
+    if (!token) {
+      // Check localStorage for client-side fallback (won't work server-side)
+      return null
+    }
 
     const res = await api.get("/auth/me", {
       headers: {

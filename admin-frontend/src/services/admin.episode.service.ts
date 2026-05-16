@@ -1,4 +1,4 @@
-import { adminAxios } from '@/lib/admin-axios'
+import { adminAxios } from '@/lib/axios'
 
 export interface EpisodeFormData {
   seriesId: string
@@ -25,8 +25,8 @@ export interface Episode {
 }
 
 export const adminEpisodeService = {
-  async getBySeries(seriesId: string, params?: { page?: number; limit?: number }) {
-    const response = await adminAxios.get(`/series/${seriesId}/episodes`, { params })
+  async getAll(params?: { page?: number; limit?: number; seriesId?: string }) {
+    const response = await adminAxios.get('/episodes', { params })
     return response.data
   },
 
@@ -42,7 +42,7 @@ export const adminEpisodeService = {
     formData.append('title', data.title)
     formData.append('description', data.description)
     formData.append('isFreePreview', String(data.isFreePreview))
-    
+
     if (data.thumbnail) {
       formData.append('thumbnail', data.thumbnail)
     }
@@ -55,7 +55,8 @@ export const adminEpisodeService = {
 
   async update(id: string, data: Partial<EpisodeFormData>) {
     const formData = new FormData()
-    
+
+    if (data.seriesId) formData.append('seriesId', data.seriesId)
     if (data.episodeNumber) formData.append('episodeNumber', String(data.episodeNumber))
     if (data.title) formData.append('title', data.title)
     if (data.description) formData.append('description', data.description)

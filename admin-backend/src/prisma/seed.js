@@ -1,10 +1,19 @@
 // Admin Backend Seed Script
 // This script can be used to seed admin-specific data if needed
 
-const { PrismaClient } = require('./generated/prisma/index.js');
+import { PrismaClient } from './generated/prisma/index.js';
+import { PrismaPg } from '@prisma/adapter-pg';
+import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
-const bcrypt = require('bcryptjs');
+const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:ott_db_pass@localhost:5432/ott_platform_db';
+
+const adapter = new PrismaPg({
+  connectionString,
+  max: 10,
+  connectionTimeoutMillis: 30000,
+});
+
+const prisma = new PrismaClient({ adapter });
 
 async function seedAdmin() {
   console.log('🔧 Checking/creating default super admin...');
@@ -54,7 +63,7 @@ async function seedPlans() {
   ];
 
   for (const plan of plans) {
-    const created = await prisma.subscriptionPlan.upsert({
+    await prisma.subscriptionPlan.upsert({
       where: { slug: plan.slug },
       update: {},
       create: plan,

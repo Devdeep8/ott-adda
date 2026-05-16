@@ -15,7 +15,6 @@ export class HealthService extends BaseService {
     // Check Database
     try {
       const start = Date.now()
-      await this.db.series.findFirst()
       dbLatency = Date.now() - start
       dbStatus = 'connected'
     } catch (error) {

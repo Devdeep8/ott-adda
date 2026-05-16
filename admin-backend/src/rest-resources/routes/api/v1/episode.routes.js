@@ -6,10 +6,10 @@ const router = Router()
 const episodeController = new EpisodeController()
 
 // All episode routes require admin authentication
-router.get('/', adminAuthMiddleware, episodeController.list)
-router.get('/:id', adminAuthMiddleware, episodeController.getById)
-router.post('/', adminAuthMiddleware, episodeController.create)
-router.put('/:id', adminAuthMiddleware, episodeController.update)
-router.delete('/:id', adminAuthMiddleware, episodeController.delete)
+router.get('/', adminAuthMiddleware, episodeController.list.bind(episodeController))
+router.get('/:id', adminAuthMiddleware, episodeController.getById.bind(episodeController))
+router.post('/', adminAuthMiddleware, episodeController.create.bind(episodeController))
+router.put('/:id', adminAuthMiddleware, episodeController.update.bind(episodeController))
+router.delete('/:id', adminAuthMiddleware, episodeController.delete.bind(episodeController))
 
 export default router

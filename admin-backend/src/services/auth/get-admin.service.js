@@ -19,14 +19,12 @@ export class GetAdminService extends BaseService {
     }
 
     return {
-      admin: {
+    
         id: admin.id,
         email: admin.email,
         role: admin.role,
-        isActive: admin.isActive,
-        firstName: admin.firstName,
-        lastName: admin.lastName
-      }
+        name: `${admin.firstName} ${admin.lastName}`,
+      
     }
   }
 }

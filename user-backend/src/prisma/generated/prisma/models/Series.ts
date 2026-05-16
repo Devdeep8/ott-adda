@@ -45,7 +45,7 @@ export type SeriesMinAggregateOutputType = {
   title: string | null
   slug: string | null
   description: string | null
-  posterUrl: string | null
+  bannerUrl: string | null
   backdropUrl: string | null
   trailerUrl: string | null
   releaseDate: Date | null
@@ -68,7 +68,7 @@ export type SeriesMaxAggregateOutputType = {
   title: string | null
   slug: string | null
   description: string | null
-  posterUrl: string | null
+  bannerUrl: string | null
   backdropUrl: string | null
   trailerUrl: string | null
   releaseDate: Date | null
@@ -91,7 +91,7 @@ export type SeriesCountAggregateOutputType = {
   title: number
   slug: number
   description: number
-  posterUrl: number
+  bannerUrl: number
   backdropUrl: number
   trailerUrl: number
   releaseDate: number
@@ -135,7 +135,7 @@ export type SeriesMinAggregateInputType = {
   title?: true
   slug?: true
   description?: true
-  posterUrl?: true
+  bannerUrl?: true
   backdropUrl?: true
   trailerUrl?: true
   releaseDate?: true
@@ -158,7 +158,7 @@ export type SeriesMaxAggregateInputType = {
   title?: true
   slug?: true
   description?: true
-  posterUrl?: true
+  bannerUrl?: true
   backdropUrl?: true
   trailerUrl?: true
   releaseDate?: true
@@ -181,7 +181,7 @@ export type SeriesCountAggregateInputType = {
   title?: true
   slug?: true
   description?: true
-  posterUrl?: true
+  bannerUrl?: true
   backdropUrl?: true
   trailerUrl?: true
   releaseDate?: true
@@ -296,7 +296,7 @@ export type SeriesGroupByOutputType = {
   title: string
   slug: string
   description: string | null
-  posterUrl: string | null
+  bannerUrl: string | null
   backdropUrl: string | null
   trailerUrl: string | null
   releaseDate: Date | null
@@ -347,7 +347,7 @@ export type SeriesWhereInput = {
   title?: Prisma.StringFilter<"Series"> | string
   slug?: Prisma.StringFilter<"Series"> | string
   description?: Prisma.StringNullableFilter<"Series"> | string | null
-  posterUrl?: Prisma.StringNullableFilter<"Series"> | string | null
+  bannerUrl?: Prisma.StringNullableFilter<"Series"> | string | null
   backdropUrl?: Prisma.StringNullableFilter<"Series"> | string | null
   trailerUrl?: Prisma.StringNullableFilter<"Series"> | string | null
   releaseDate?: Prisma.DateTimeNullableFilter<"Series"> | Date | string | null
@@ -377,7 +377,7 @@ export type SeriesOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  posterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannerUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   backdropUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   trailerUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   releaseDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -410,7 +410,7 @@ export type SeriesWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SeriesWhereInput | Prisma.SeriesWhereInput[]
   title?: Prisma.StringFilter<"Series"> | string
   description?: Prisma.StringNullableFilter<"Series"> | string | null
-  posterUrl?: Prisma.StringNullableFilter<"Series"> | string | null
+  bannerUrl?: Prisma.StringNullableFilter<"Series"> | string | null
   backdropUrl?: Prisma.StringNullableFilter<"Series"> | string | null
   trailerUrl?: Prisma.StringNullableFilter<"Series"> | string | null
   releaseDate?: Prisma.DateTimeNullableFilter<"Series"> | Date | string | null
@@ -440,7 +440,7 @@ export type SeriesOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  posterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannerUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   backdropUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   trailerUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   releaseDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -476,7 +476,7 @@ export type SeriesScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Series"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Series"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Series"> | string | null
-  posterUrl?: Prisma.StringNullableWithAggregatesFilter<"Series"> | string | null
+  bannerUrl?: Prisma.StringNullableWithAggregatesFilter<"Series"> | string | null
   backdropUrl?: Prisma.StringNullableWithAggregatesFilter<"Series"> | string | null
   trailerUrl?: Prisma.StringNullableWithAggregatesFilter<"Series"> | string | null
   releaseDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Series"> | Date | string | null
@@ -503,7 +503,7 @@ export type SeriesCreateInput = {
   title: string
   slug: string
   description?: string | null
-  posterUrl?: string | null
+  bannerUrl?: string | null
   backdropUrl?: string | null
   trailerUrl?: string | null
   releaseDate?: Date | string | null
@@ -533,7 +533,7 @@ export type SeriesUncheckedCreateInput = {
   title: string
   slug: string
   description?: string | null
-  posterUrl?: string | null
+  bannerUrl?: string | null
   backdropUrl?: string | null
   trailerUrl?: string | null
   releaseDate?: Date | string | null
@@ -562,7 +562,7 @@ export type SeriesUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backdropUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trailerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -592,7 +592,7 @@ export type SeriesUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backdropUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trailerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -622,7 +622,7 @@ export type SeriesCreateManyInput = {
   title: string
   slug: string
   description?: string | null
-  posterUrl?: string | null
+  bannerUrl?: string | null
   backdropUrl?: string | null
   trailerUrl?: string | null
   releaseDate?: Date | string | null
@@ -649,7 +649,7 @@ export type SeriesUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backdropUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trailerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -677,7 +677,7 @@ export type SeriesUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backdropUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trailerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -705,7 +705,7 @@ export type SeriesCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  posterUrl?: Prisma.SortOrder
+  bannerUrl?: Prisma.SortOrder
   backdropUrl?: Prisma.SortOrder
   trailerUrl?: Prisma.SortOrder
   releaseDate?: Prisma.SortOrder
@@ -740,7 +740,7 @@ export type SeriesMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  posterUrl?: Prisma.SortOrder
+  bannerUrl?: Prisma.SortOrder
   backdropUrl?: Prisma.SortOrder
   trailerUrl?: Prisma.SortOrder
   releaseDate?: Prisma.SortOrder
@@ -763,7 +763,7 @@ export type SeriesMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  posterUrl?: Prisma.SortOrder
+  bannerUrl?: Prisma.SortOrder
   backdropUrl?: Prisma.SortOrder
   trailerUrl?: Prisma.SortOrder
   releaseDate?: Prisma.SortOrder
@@ -849,7 +849,7 @@ export type SeriesCreateWithoutEpisodesInput = {
   title: string
   slug: string
   description?: string | null
-  posterUrl?: string | null
+  bannerUrl?: string | null
   backdropUrl?: string | null
   trailerUrl?: string | null
   releaseDate?: Date | string | null
@@ -878,7 +878,7 @@ export type SeriesUncheckedCreateWithoutEpisodesInput = {
   title: string
   slug: string
   description?: string | null
-  posterUrl?: string | null
+  bannerUrl?: string | null
   backdropUrl?: string | null
   trailerUrl?: string | null
   releaseDate?: Date | string | null
@@ -922,7 +922,7 @@ export type SeriesUpdateWithoutEpisodesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backdropUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trailerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -951,7 +951,7 @@ export type SeriesUncheckedUpdateWithoutEpisodesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backdropUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trailerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -979,7 +979,7 @@ export type SeriesCreateWithoutCategoriesInput = {
   title: string
   slug: string
   description?: string | null
-  posterUrl?: string | null
+  bannerUrl?: string | null
   backdropUrl?: string | null
   trailerUrl?: string | null
   releaseDate?: Date | string | null
@@ -1008,7 +1008,7 @@ export type SeriesUncheckedCreateWithoutCategoriesInput = {
   title: string
   slug: string
   description?: string | null
-  posterUrl?: string | null
+  bannerUrl?: string | null
   backdropUrl?: string | null
   trailerUrl?: string | null
   releaseDate?: Date | string | null
@@ -1052,7 +1052,7 @@ export type SeriesUpdateWithoutCategoriesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backdropUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trailerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1081,7 +1081,7 @@ export type SeriesUncheckedUpdateWithoutCategoriesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backdropUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trailerUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1150,7 +1150,7 @@ export type SeriesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   title?: boolean
   slug?: boolean
   description?: boolean
-  posterUrl?: boolean
+  bannerUrl?: boolean
   backdropUrl?: boolean
   trailerUrl?: boolean
   releaseDate?: boolean
@@ -1181,7 +1181,7 @@ export type SeriesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   title?: boolean
   slug?: boolean
   description?: boolean
-  posterUrl?: boolean
+  bannerUrl?: boolean
   backdropUrl?: boolean
   trailerUrl?: boolean
   releaseDate?: boolean
@@ -1209,7 +1209,7 @@ export type SeriesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   title?: boolean
   slug?: boolean
   description?: boolean
-  posterUrl?: boolean
+  bannerUrl?: boolean
   backdropUrl?: boolean
   trailerUrl?: boolean
   releaseDate?: boolean
@@ -1237,7 +1237,7 @@ export type SeriesSelectScalar = {
   title?: boolean
   slug?: boolean
   description?: boolean
-  posterUrl?: boolean
+  bannerUrl?: boolean
   backdropUrl?: boolean
   trailerUrl?: boolean
   releaseDate?: boolean
@@ -1260,7 +1260,7 @@ export type SeriesSelectScalar = {
   deletedAt?: boolean
 }
 
-export type SeriesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "description" | "posterUrl" | "backdropUrl" | "trailerUrl" | "releaseDate" | "status" | "type" | "language" | "duration" | "rating" | "ratingCount" | "genres" | "tags" | "cast" | "crew" | "metadata" | "ageRating" | "isPremium" | "isFeatured" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["series"]>
+export type SeriesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "description" | "bannerUrl" | "backdropUrl" | "trailerUrl" | "releaseDate" | "status" | "type" | "language" | "duration" | "rating" | "ratingCount" | "genres" | "tags" | "cast" | "crew" | "metadata" | "ageRating" | "isPremium" | "isFeatured" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["series"]>
 export type SeriesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   episodes?: boolean | Prisma.Series$episodesArgs<ExtArgs>
   categories?: boolean | Prisma.Series$categoriesArgs<ExtArgs>
@@ -1280,7 +1280,7 @@ export type $SeriesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     title: string
     slug: string
     description: string | null
-    posterUrl: string | null
+    bannerUrl: string | null
     backdropUrl: string | null
     trailerUrl: string | null
     releaseDate: Date | null
@@ -1730,7 +1730,7 @@ export interface SeriesFieldRefs {
   readonly title: Prisma.FieldRef<"Series", 'String'>
   readonly slug: Prisma.FieldRef<"Series", 'String'>
   readonly description: Prisma.FieldRef<"Series", 'String'>
-  readonly posterUrl: Prisma.FieldRef<"Series", 'String'>
+  readonly bannerUrl: Prisma.FieldRef<"Series", 'String'>
   readonly backdropUrl: Prisma.FieldRef<"Series", 'String'>
   readonly trailerUrl: Prisma.FieldRef<"Series", 'String'>
   readonly releaseDate: Prisma.FieldRef<"Series", 'DateTime'>

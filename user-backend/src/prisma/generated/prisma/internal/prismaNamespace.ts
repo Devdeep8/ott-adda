@@ -1361,7 +1361,7 @@ export const SeriesScalarFieldEnum = {
   title: 'title',
   slug: 'slug',
   description: 'description',
-  posterUrl: 'posterUrl',
+  bannerUrl: 'bannerUrl',
   backdropUrl: 'backdropUrl',
   trailerUrl: 'trailerUrl',
   releaseDate: 'releaseDate',

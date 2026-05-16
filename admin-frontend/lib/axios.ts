@@ -13,11 +13,29 @@ const api = axios.create({
   },
 });
 
+// Request interceptor to add auth token
+api.interceptors.request.use(
+  (config) => {
+    // Add auth token from localStorage if available
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('admin_token')
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    }
+    return config
+  },
+  (error) => Promise.reject(error)
+);
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
       if (typeof window !== "undefined") {
+        // Clear auth tokens
+        localStorage.removeItem('admin_token')
+        localStorage.removeItem('admin_user')
         window.location.href = "/login";
       }
     }
@@ -27,3 +45,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+export { api as adminAxios };

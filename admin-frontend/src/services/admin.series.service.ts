@@ -1,4 +1,4 @@
-import { adminAxios } from '@/lib/admin-axios'
+import { adminAxios } from '@/lib/axios'
 
 export interface SeriesFormData {
   title: string

@@ -1,7 +1,6 @@
-import { BaseController } from '@/src/lib/base.controller.js'
 import { sendResponse } from '@/src/helpers/response.helpers.js'
 
-export class AdminUserController extends BaseController {
+export class AdminUserController {
   async list(req, res, next) {
     try {
       return sendResponse(req, res, [], 'Users list fetched')
