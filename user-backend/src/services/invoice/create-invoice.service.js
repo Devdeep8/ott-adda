@@ -1,9 +1,9 @@
-import { BaseService } from '@/src/lib/base.service.js'
-import { AppError } from '@/src/errors/app.error.js'
-import { Errors } from '@/src/errors/errorCodes.js'
-import { InvoiceStatus } from '@/src/prisma/generated/prisma/client'
-import appEvents from '@/src/events/app-events.js'
-import CreateClientService from '@/src/services/client/create-client.service.js'
+import { BaseService } from '../../lib/base.service.js'
+import { AppError } from '../../errors/app.error.js'
+import { Errors } from '../../errors/errorCodes.js'
+import { InvoiceStatus } from '../../prisma/generated/prisma/client'
+import appEvents from '../../events/app-events.js'
+import CreateClientService from '../../services/client/create-client.service.js'
 
 export default class CreateInvoiceService extends BaseService {
   validate() {

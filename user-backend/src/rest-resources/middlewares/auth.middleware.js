@@ -1,10 +1,10 @@
-﻿import { AppError } from "@/src/errors/app.error.js";
-import { Errors } from "@/src/errors/errorCodes.js";
-import prisma from "../../lib/prisma";
-import { verifyAccessToken, verifyRefreshToken, generateAccessToken, generateRefreshToken } from "@/src/helpers/auth.helper.js";
-import redis from "@/src/lib/redis.js";
-import { REDIS_KEYS } from "@/src/constants/redis.constants.js";
-import { setAuthCookies } from "@/src/helpers/cookie.helper.js";
+﻿import { AppError } from '../../errors/app.error.js'
+import { Errors } from '../../errors/errorCodes.js'
+import prisma from "../../lib/prisma"
+import { verifyAccessToken, verifyRefreshToken, generateAccessToken, generateRefreshToken } from '../../helpers/auth.helper.js'
+import redis from '../../lib/redis.js'
+import { REDIS_KEYS } from '../../constants/redis.constants.js'
+import { setAuthCookies } from '../../helpers/cookie.helper.js'
 
 const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60
 
@@ -38,13 +38,6 @@ export function authMiddleware() {
             if (user.subscription) {
               req.context.user.subscription = user.subscription
             }
-            if (user.business?.id) {
-              req.context.businessId = user.business.id;
-              return next();
-            }
-            // Fallback: fetch business
-            const business = await prisma.business.findUnique({ where: { userId: user.id } });
-            if (business) req.context.businessId = business.id;
             return next();
           }
         }

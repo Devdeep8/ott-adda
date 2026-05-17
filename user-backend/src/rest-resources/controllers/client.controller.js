@@ -1,9 +1,9 @@
-import { sendResponse } from '@/src/helpers/response.helpers.js'
-import CreateClientService from '@/src/services/client/create-client.service.js'
-import GetClientsService from '@/src/services/client/get-clients.service.js'
-import GetClientByIdService from '@/src/services/client/get-client-by-id.service.js'
-import UpdateClientService from '@/src/services/client/update-client.service.js'
-import DeleteClientService from '@/src/services/client/delete-client.service.js'
+import { sendResponse } from '../../helpers/response.helpers.js'
+import CreateClientService from '../../services/client/create-client.service.js'
+import GetClientsService from '../../services/client/get-clients.service.js'
+import GetClientByIdService from '../../services/client/get-client-by-id.service.js'
+import UpdateClientService from '../../services/client/update-client.service.js'
+import DeleteClientService from '../../services/client/delete-client.service.js'
 
 export default class ClientController {
   static async create(req, res, next) {

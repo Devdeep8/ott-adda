@@ -1,11 +1,10 @@
-import { sendResponse } from '@/src/helpers/response.helpers.js'
-
+import { sendResponse } from '../../helpers/response.helpers.js'
+import { ListCategoriesService } from '@/src/services/category/list-categories.service.js'
 export class CategoryController  {
   async list(req, res, next) {
     try {
-      const { ListCategoriesService } = await import('@/src/services/category/list-categories.service.js')
       const result = await ListCategoriesService.execute({}, req.context)
-      return sendResponse(req, res, result, 'Categories fetched')
+      sendResponse({ req, res, next }, result, 'categoris successful')
     } catch (error) {
       return next(error)
     }
@@ -15,7 +14,7 @@ export class CategoryController  {
     try {
       const { GetCategoryService } = await import('@/src/services/category/get-category.service.js')
       const result = await GetCategoryService.execute({ slug: req.params.slug }, req.context)
-      return sendResponse(req, res, result, 'Category fetched')
+      sendResponse({ req, res, next }, result, 'categoris successful')
     } catch (error) {
       return next(error)
     }
@@ -28,7 +27,7 @@ export class CategoryController  {
         { slug: req.params.slug, ...req.query },
         req.context
       )
-      return sendResponse(req, res, result, 'Category series fetched')
+      sendResponse({ req, res, next }, result, 'categoris successful')
     } catch (error) {
       return next(error)
     }

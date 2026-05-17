@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  password    String
+  firstName   String    @map("first_name")
+  lastName    String?   @map("last_name")
+  role        AdminRole @default(ADMIN)
+  isActive    Boolean   @default(true) @map("is_active")
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@index([email])
+  @@index([isActive])
+  @@map("admins")
+}
+
+model User {
+  id            String            @id @default(cuid())
+  email         String            @unique
+  passwordHash  String?
+  phone         String?           @unique
+  role          UserRole          @default(USER)
+  isActive      Boolean           @default(true) @map("is_active")
+  emailVerified Boolean           @default(false) @map("email_verified")
+  lastLoginAt   DateTime?         @map("last_login_at")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  deletedAt     DateTime?         @map("deleted_at")
+  payments      Payment[]
+  profile       UserProfile?
+  subscription  UserSubscription?
+  watchHistory  WatchHistory[]
+  watchList     WatchList[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([isActive])
+  @@map("users")
+}
+
+model UserProfile {
+  id          Int       @id @default(autoincrement())
+  userId      String    @unique @map("user_id")
+  firstName   String?   @map("first_name")
+  lastName    String?   @map("last_name")
+  displayName String?   @map("display_name")
+  avatarUrl   String?   @map("avatar_url")
+  dateOfBirth DateTime? @map("date_of_birth")
+  gender      String?
+  language    String    @default("en")
+  country     String?
+  preferences Json?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_profiles")
+}
+
+model SubscriptionPlan {
+  id            String             @id @default(cuid())
+  name          String
+  slug          String             @unique
+  priceInPaise  Int
+  durationDays  Int
+  features      String[]
+  isActive      Boolean            @default(true)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  payments      Payment[]
+  subscriptions UserSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  planId    String
+  status    SubscriptionStatus @default(ACTIVE)
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  plan      SubscriptionPlan   @relation(fields: [planId], references: [id])
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_subscriptions")
+}
+
+model Payment {
+  id                String           @id @default(cuid())
+  userId            String
+  planId            String
+  amountInPaise     Int
+  currency          String           @default("INR")
+  status            PaymentStatus    @default(PENDING)
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  paidAt            DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  plan              SubscriptionPlan @relation(fields: [planId], references: [id])
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("payments")
+}
+
+model Series {
+  id            String           @id @default(cuid())
+  title         String
+  slug          String           @unique
+  description   String?
+  genres        String[]
+  thumbnailUrl  String?
+  bannerUrl     String?
+  status        SeriesStatus     @default(DRAFT)
+  releaseDate   DateTime?
+  totalEpisodes Int              @default(0)
+  viewCount     Int              @default(0)
+  isFeatured    Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  categories    SeriesCategory[]
+  episodes      Episode[]
+  watchHistory  WatchHistory[]
+  watchList     WatchList[]
+
+  @@index([status, viewCount, releaseDate])
+  @@map("series")
+}
+
+model Episode {
+  id              String         @id @default(cuid())
+  seriesId        String
+  title           String
+  episodeNumber   Int
+  description     String?
+  thumbnailUrl    String?
+  durationSeconds Int            @default(0)
+  isFree          Boolean        @default(false)
+  viewCount       Int            @default(0)
+  status          EpisodeStatus  @default(PROCESSING)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  series          Series         @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  videoAsset      VideoAsset?
+  watchHistory    WatchHistory[]
+
+  @@unique([seriesId, episodeNumber])
+  @@index([seriesId, episodeNumber])
+  @@map("episodes")
+}
+
+model VideoAsset {
+  id              String      @id @default(cuid())
+  episodeId       String      @unique
+  originalPath    String?
+  hlsDirectory    String?
+  hlsManifestPath String?
+  durationSeconds Int         @default(0)
+  fileSizeBytes   BigInt      @default(0)
+  resolution      String?
+  status          VideoStatus @default(PENDING)
+  processingError String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  episode         Episode     @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@map("video_assets")
+}
+
+model Category {
+  id           String           @id @default(cuid())
+  name         String
+  slug         String           @unique
+  description  String?
+  displayOrder Int              @default(0)
+  isAutomatic  Boolean          @default(false)
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  series       SeriesCategory[]
+
+  @@map("categories")
+}
+
+model SeriesCategory {
+  id           String   @id @default(cuid())
+  seriesId     String
+  categoryId   String
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  category     Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  series       Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+
+  @@unique([seriesId, categoryId])
+}
+
+model WatchHistory {
+  id              String   @id @default(cuid())
+  userId          String
+  episodeId       String
+  seriesId        String
+  progressSeconds Int      @default(0)
+  durationSeconds Int      @default(0)
+  isCompleted     Boolean  @default(false)
+  watchedAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  episode         Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  series          Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+  @@index([userId, watchedAt])
+  @@map("watch_history")
+}
+
+model WatchList {
+  id       String   @id @default(cuid())
+  userId   String
+  seriesId String
+  addedAt  DateTime @default(now())
+  series   Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, seriesId])
+  @@map("watch_list")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PENDING
+  PAUSED
+}
+
+enum SubscriptionPlanType {
+  FREE
+  MONTHLY
+  YEARLY
+}
+
+enum ContentType {
+  SERIES
+  MOVIE
+  DOCUMENTARY
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ACTIVE
+  UPCOMING
+  ARCHIVED
+}
+
+enum CategoryType {
+  TOP_PICKS
+  RECOMMENDED
+  NEW_RELEASES
+  UPCOMING
+  TRENDING
+  CUSTOM
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum SeriesStatus {
+  DRAFT
+  ACTIVE
+  UPCOMING
+  ARCHIVED
+}
+
+enum EpisodeStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum VideoStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}

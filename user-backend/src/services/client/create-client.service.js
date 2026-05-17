@@ -1,7 +1,7 @@
-import { BaseService } from '@/src/lib/base.service.js'
-import { AppError } from '@/src/errors/app.error.js'
-import { Errors } from '@/src/errors/errorCodes.js'
-import appEvents from '@/src/events/app-events.js'
+import { BaseService } from '../../lib/base.service.js'
+import { AppError } from '../../errors/app.error.js'
+import { Errors } from '../../errors/errorCodes.js'
+import appEvents from '../../events/app-events.js'
 
 export default class CreateClientService extends BaseService {
   validate() {

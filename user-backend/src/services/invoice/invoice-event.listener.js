@@ -1,4 +1,4 @@
-import appEvents from '@/src/events/app-events.js'
+import appEvents from '../../events/app-events.js'
 import { invoiceSendHandler } from './invoice-send.handler.js'
 
 export const registerInvoiceListeners = () => {

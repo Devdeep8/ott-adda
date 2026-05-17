@@ -1,7 +1,7 @@
 // context.middleware.js
 
 import { v4 as uuid } from 'uuid'
-import logger from '@/src/lib/logger.js'
+import logger from '../../lib/logger.js'
 
 export function contextMiddleware() {
   return (req, res, next) => {

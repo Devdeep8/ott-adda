@@ -1,7 +1,7 @@
 import express from 'express'
-import { contextMiddleware } from '@/src/rest-resources/middlewares/context.middleware.js'
-import { authMiddleware } from '@/src/rest-resources/middlewares/auth.middleware.js'
-import BusinessController from '@/src/rest-resources/controllers/business.controller'
+import { contextMiddleware } from '../../../../rest-resources/middlewares/context.middleware.js'
+import { authMiddleware } from '../../../../rest-resources/middlewares/auth.middleware.js'
+import BusinessController from '../../../../rest-resources/controllers/business.controller'
 
 const businessRoutes = express.Router()
 

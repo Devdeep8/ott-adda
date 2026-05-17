@@ -1,6 +1,6 @@
-import { AppError } from '@/src/errors/app.error.js'
-import { Errors } from '@/src/errors/errorCodes.js'
-import prisma from '@/src/lib/prisma.js'
+import { AppError } from '../errors/app.error.js'
+import { Errors } from '../errors/errorCodes.js'
+import prisma from '../lib/prisma.js'
 
 export class BaseService {
   constructor(args = {}, context = {}) {

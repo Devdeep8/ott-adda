@@ -1,4 +1,4 @@
-import CreateBusinessService from "@/src/services/business/createbusiness.service"
+import CreateBusinessService from '../../services/business/createbusiness.service"
 import { sendResponse } from "../../helpers/response.helpers"
 
 

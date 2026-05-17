@@ -1,4 +1,4 @@
-import logger from '@/src/lib/logger.js'
+import logger from '../../lib/logger.js'
 
 export function requestLogger(req, res, next) {
   if (req.path === '/health') return next()

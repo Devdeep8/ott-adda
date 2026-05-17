@@ -1,4 +1,4 @@
-import { BaseService } from '@/src/lib/base.service.js'
+import { BaseService } from '../../lib/base.service.js'
 
 export default class GetClientsService extends BaseService {
   async run() {

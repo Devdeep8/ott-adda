@@ -1,10 +1,10 @@
 ﻿import bcrypt from 'bcryptjs'
-import { BaseService } from '@/src/lib/base.service.js'
-import { AppError } from '@/src/errors/app.error.js'
-import { Errors } from '@/src/errors/errorCodes.js'
-import { generateAccessToken, generateRefreshToken } from '@/src/helpers/auth.helper.js'
-import redis from '@/src/lib/redis.js'
-import { REDIS_KEYS } from '@/src/constants/redis.constants.js'
+import { BaseService } from '../../lib/base.service.js'
+import { AppError } from '../../errors/app.error.js'
+import { Errors } from '../../errors/errorCodes.js'
+import { generateAccessToken, generateRefreshToken } from '../../helpers/auth.helper.js'
+import redis from '../../lib/redis.js'
+import { REDIS_KEYS } from '../../constants/redis.constants.js'
 
 export default class LoginService extends BaseService {
   validate() {

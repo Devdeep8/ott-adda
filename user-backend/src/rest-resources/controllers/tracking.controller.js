@@ -1,5 +1,5 @@
-import prisma from '@/src/lib/prisma.js'
-import { sendResponse } from '@/src/helpers/response.helpers.js'
+import prisma from '../../lib/prisma.js'
+import { sendResponse } from '../../helpers/response.helpers.js'
 
 export default class TrackingController {
   static async trackInvoiceView(req, res, next) {

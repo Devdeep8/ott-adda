@@ -1,5 +1,5 @@
 import pino from 'pino'
-import config from '@/src/configs/app.config.js'
+import config from '../configs/app.config.js'
 
 const isDev = config.get('env') === 'development'
 const isTest = config.get('env') === 'test'

@@ -1,7 +1,7 @@
-import { sendResponse } from '@/src/helpers/response.helpers.js'
+import { sendResponse } from '../../helpers/response.helpers.js'
 
 export class SubscriptionController {
-  async listPlans(req, res, next) {
+static  async listPlans(req, res, next) {
     try {
       const { ListPlansService } = await import('@/src/services/subscription/list-plans.service.js')
       const result = await ListPlansService.execute({}, req.context)
@@ -11,7 +11,7 @@ export class SubscriptionController {
     }
   }
 
-  async getPlanById(req, res, next) {
+ static async getPlanById(req, res, next) {
     try {
       const { GetPlanService } = await import('@/src/services/subscription/get-plan.service.js')
       const result = await GetPlanService.execute({ id: parseInt(req.params.id) }, req.context)
@@ -21,7 +21,7 @@ export class SubscriptionController {
     }
   }
 
-  async getMySubscription(req, res, next) {
+static  async getMySubscription(req, res, next) {
     try {
       const { GetMySubscriptionService } = await import('@/src/services/subscription/get-my-subscription.service.js')
       const result = await GetMySubscriptionService.execute({}, req.context)
@@ -31,7 +31,7 @@ export class SubscriptionController {
     }
   }
 
-  async subscribe(req, res, next) {
+ static async subscribe(req, res, next) {
     try {
       const { SubscribeService } = await import('@/src/services/subscription/subscribe.service.js')
       const result = await SubscribeService.execute(req.body, req.context)
@@ -41,7 +41,7 @@ export class SubscriptionController {
     }
   }
 
-  async cancelSubscription(req, res, next) {
+ static async cancelSubscription(req, res, next) {
     try {
       const { CancelSubscriptionService } = await import('@/src/services/subscription/cancel-subscription.service.js')
       const result = await CancelSubscriptionService.execute({}, req.context)

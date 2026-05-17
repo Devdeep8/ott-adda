@@ -1,7 +1,7 @@
 import { createServer } from "http";
-import config from "@/src/configs/app.config.js";
-import app from "@/src/rest-resources/index.js";
-import { ensureUploadDirs } from "@/src/rest-resources/middlewares/upload.middleware.ts";
+import config from "./src/configs/app.config.js";
+import app from "./src/rest-resources/index.js";
+import { ensureUploadDirs } from "./src/rest-resources/middlewares/upload.middleware.js";
 
 const PORT = config.get("port");
 ensureUploadDirs();

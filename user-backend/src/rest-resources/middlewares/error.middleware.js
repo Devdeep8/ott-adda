@@ -1,8 +1,8 @@
-import { AppError } from '@/src/errors/app.error.js'
-import { Errors } from '@/src/errors/errorCodes.js'
-import config from '@/src/configs/app.config.js'
-import logger from '@/src/lib/logger.js'
-import { handlePrismaError } from '@/src/errors/prisma.error'
+import { AppError } from '../../errors/app.error.js'
+import { Errors } from '../../errors/errorCodes.js'
+import config from '../../configs/app.config.js'
+import logger from '../../lib/logger.js'
+import { handlePrismaError } from '../../errors/prisma.error'
 
 
 

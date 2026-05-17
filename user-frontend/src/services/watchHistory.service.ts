@@ -9,14 +9,14 @@ export interface SaveProgressData {
 
 export const watchHistoryService = {
   saveProgress: (data: SaveProgressData) =>
-    axiosInstance.post('/api/v1/history', data),
+    axiosInstance.post('/api/v1/watch-history', data),
 
   getContinueWatching: () =>
-    axiosInstance.get('/api/v1/history/continue-watching'),
+    axiosInstance.get('/api/v1/watch-history/continue-watching'),
 
   getHistory: (params?: { page?: number; limit?: number }) =>
-    axiosInstance.get('/api/v1/history', { params }),
+    axiosInstance.get('/api/v1/watch-history', { params }),
 
   removeFromHistory: (episodeId: string) =>
-    axiosInstance.delete(`/api/v1/history/${episodeId}`),
+    axiosInstance.delete(`/api/v1/watch-history/${episodeId}`),
 }

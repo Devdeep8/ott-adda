@@ -1,10 +1,10 @@
 ﻿import { sendResponse } from "../../helpers/response.helpers"
 import RegisterService from "../../services/auth/register.service"
 import LoginService from "../../services/auth/login.service"
-import { setAuthCookies } from "@/src/helpers/cookie.helper.js"
-import redis from "@/src/lib/redis.js"
-import { REDIS_KEYS } from "@/src/constants/redis.constants.js"
-import prisma from "@/src/lib/prisma.js"
+import { setAuthCookies } from '../../helpers/cookie.helper.js'
+import redis from '../../lib/redis.js'
+import { REDIS_KEYS } from '../../constants/redis.constants.js'
+import prisma from '../../lib/prisma.js'
 
 const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60
 
@@ -43,7 +43,6 @@ export default class UserController {
       const user = await prisma.user.findUnique({
         where: { id: req.context.user.id },
         include: {
-          business: true,
           subscription: {
             include: {
               plan: {

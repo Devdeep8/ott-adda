@@ -1,6 +1,6 @@
-import { BaseService } from '@/src/lib/base.service.js'
-import { AppError } from '@/src/errors/app.error.js'
-import { Errors } from '@/src/errors/errorCodes.js'
+import { BaseService } from '../../lib/base.service.js'
+import { AppError } from '../../errors/app.error.js'
+import { Errors } from '../../errors/errorCodes.js'
 
 export default class GetClientByIdService extends BaseService {
   async run() {

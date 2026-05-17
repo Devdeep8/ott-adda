@@ -1,11 +1,11 @@
-import { sendResponse } from '@/src/helpers/response.helpers.js'
-import CreateInvoiceService from '@/src/services/invoice/create-invoice.service.js'
-import GetInvoicesService from '@/src/services/invoice/get-invoices.service.js'
-import GetInvoiceByIdService from '@/src/services/invoice/get-invoice-by-id.service.js'
-import UpdateInvoiceService from '@/src/services/invoice/update-invoice.service.js'
-import DeleteInvoiceService from '@/src/services/invoice/delete-invoice.service.js'
-import SendInvoiceService from '@/src/services/invoice/send-invoice.service.js'
-import UpdateInvoiceStatusService from '@/src/services/invoice/update-invoice-status.service.js'
+import { sendResponse } from '../../helpers/response.helpers.js'
+import CreateInvoiceService from '../../services/invoice/create-invoice.service.js'
+import GetInvoicesService from '../../services/invoice/get-invoices.service.js'
+import GetInvoiceByIdService from '../../services/invoice/get-invoice-by-id.service.js'
+import UpdateInvoiceService from '../../services/invoice/update-invoice.service.js'
+import DeleteInvoiceService from '../../services/invoice/delete-invoice.service.js'
+import SendInvoiceService from '../../services/invoice/send-invoice.service.js'
+import UpdateInvoiceStatusService from '../../services/invoice/update-invoice-status.service.js'
 
 export default class InvoiceController {
   static async create(req, res, next) {

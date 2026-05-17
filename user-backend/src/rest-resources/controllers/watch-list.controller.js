@@ -1,4 +1,4 @@
-import { sendResponse } from '@/src/helpers/response.helpers.js'
+import { sendResponse } from '../../helpers/response.helpers.js'
 
 export class WatchListController  {
   async list(req, res, next) {

@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { contextMiddleware } from '@/src/rest-resources/middlewares/context.middleware.js'
-import TrackingController from '@/src/rest-resources/controllers/tracking.controller.js'
+import { contextMiddleware } from '../../../../rest-resources/middlewares/context.middleware.js'
+import TrackingController from '../../../../rest-resources/controllers/tracking.controller.js'
 
 const trackingRoutes = Router()
 

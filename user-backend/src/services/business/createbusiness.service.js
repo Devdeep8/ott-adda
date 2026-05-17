@@ -1,6 +1,6 @@
-import { AppError } from "@/src/errors/app.error";
-import { Errors } from "@/src/errors/errorCodes";
-import BaseService from "@/src/lib/base.service";
+import { AppError } from '../../errors/app.error";
+import { Errors } from '../../errors/errorCodes";
+import BaseService from '../../lib/base.service";
 
 export default class CreateBusinessService extends BaseService {
   async run() {

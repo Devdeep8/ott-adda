@@ -1,7 +1,7 @@
 import { Router } from 'express'
-import { contextMiddleware } from '@/src/rest-resources/middlewares/context.middleware.js'
-import { authMiddleware } from '@/src/rest-resources/middlewares/auth.middleware.js'
-import InvoiceController from '@/src/rest-resources/controllers/invoice.controller.js'
+import { contextMiddleware } from '../../../../rest-resources/middlewares/context.middleware.js'
+import { authMiddleware } from '../../../../rest-resources/middlewares/auth.middleware.js'
+import InvoiceController from '../../../../rest-resources/controllers/invoice.controller.js'
 
 const invoiceRoutes = Router()
 

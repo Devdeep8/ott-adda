@@ -1,6 +1,6 @@
-import { BaseService } from '@/src/lib/base.service.js'
-import config from '@/src/configs/app.config.js'
-import redis from '@/src/lib/redis.js'
+import { BaseService } from '../lib/base.service.js'
+import config from '../configs/app.config.js'
+import redis from '../lib/redis.js'
 
 export class HealthService extends BaseService {
   async run() {

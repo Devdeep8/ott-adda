@@ -1,7 +1,7 @@
 import '@/src/configs/app.config.js' 
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@/src/prisma/generated/prisma/client"; // tsx understands @/ thanks to tsconfig
-import config from '@/src/configs/app.config.js'
+import { PrismaClient } from '../prisma/generated/prisma'
+import config from '../configs/app.config.js'
 
 const connectionString = process.env.DATABASE_URL;
 
